@@ -1,0 +1,16 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creditbus.Facade", "Creditbus.Facade\Creditbus.Facade.csproj", "{8FFF647E-0444-4F8C-831F-F1E38384B1A8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FFF647E-0444-4F8C-831F-F1E38384B1A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FFF647E-0444-4F8C-831F-F1E38384B1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FFF647E-0444-4F8C-831F-F1E38384B1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FFF647E-0444-4F8C-831F-F1E38384B1A8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
