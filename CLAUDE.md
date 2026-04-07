@@ -55,6 +55,10 @@ Creditbus.Facade/
 - **Shared/ must stay thin:** only truly cross-cutting abstractions belong there. If something is only used by one feature, it stays inside that feature.
 - **New features:** add a new folder under `Features/` following the same four-subfolder layout (`Domain`, `Application`, `Infrastructure`, `Api`).
 
+#### Naming conventions
+
+- **Kafka consumers:** classes that implement `IKafkaMessageHandler` must be named `<FeatureName>KafkaConsumer` and live in `Features/<FeatureName>/Infrastructure/`. Example: `CardsIngestionKafkaConsumer`.
+
 #### Current features
 
 | Feature | Description |

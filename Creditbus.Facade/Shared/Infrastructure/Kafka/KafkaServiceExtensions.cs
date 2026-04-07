@@ -32,7 +32,7 @@ public static class KafkaServiceExtensions
             return new ConsumerBuilder<string, string>(config).Build();
         });
 
-        services.AddSingleton<IKafkaMessageHandler, CardsIngestionKafkaHandler>();
+        services.AddSingleton<IKafkaMessageHandler, CardsIngestionKafkaConsumer>();
         services.AddSingleton<KafkaHandlerRegistry>();
         services.AddSingleton<KafkaDlqPublisher>();
         services.AddHostedService<KafkaConsumerBackgroundService>();

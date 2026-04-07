@@ -3,17 +3,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Creditbus.Facade.Features.CardsIngestion.Infrastructure;
 
-public sealed class CardsIngestionKafkaHandler : IKafkaMessageHandler
+public sealed class CardsIngestionKafkaConsumer : IKafkaMessageHandler
 {
-    private readonly ILogger<CardsIngestionKafkaHandler> _logger;
+    private readonly ILogger<CardsIngestionKafkaConsumer> _logger;
 
-    public CardsIngestionKafkaHandler(ILogger<CardsIngestionKafkaHandler> logger)
+    public CardsIngestionKafkaConsumer(ILogger<CardsIngestionKafkaConsumer> logger)
     {
         _logger = logger;
     }
 
     public string MessageType => "CardsIngestionEvent";
-    
 
     public Task HandleAsync(string payload, CancellationToken cancellationToken)
     {
