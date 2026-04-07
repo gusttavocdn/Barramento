@@ -1,5 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A3A6A167-F378-46F6-8EBA-B8AE9CD161FA}"
+	ProjectSection(SolutionItems) = preProject
+		docs\superpowers\specs\2026-04-06-kafka-consumer-infrastructure-design.md = docs\superpowers\specs\2026-04-06-kafka-consumer-infrastructure-design.md
+		docs\superpowers\plans\2026-04-06-kafka-consumer-infrastructure.md = docs\superpowers\plans\2026-04-06-kafka-consumer-infrastructure.md
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creditbus.Facade", "Creditbus.Facade\Creditbus.Facade.csproj", "{8FFF647E-0444-4F8C-831F-F1E38384B1A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creditbus.Facade.Tests", "Creditbus.Facade.Tests\Creditbus.Facade.Tests.csproj", "{B94BB8DA-8391-48DD-8484-5A4AB23AFC35}"
