@@ -13,6 +13,7 @@ public sealed class CardsIngestionKafkaHandler : IKafkaMessageHandler
     }
 
     public string MessageType => "CardsIngestionEvent";
+    
 
     public Task HandleAsync(string payload, CancellationToken cancellationToken)
     {
