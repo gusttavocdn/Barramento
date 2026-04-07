@@ -18,7 +18,8 @@ Implement the initial version of `ProcessCardEventUseCase`, which processes the 
 Creditbus.Facade/
 └── Features/
     └── CardsIngestion/
-        ├── Domain/
+        ├── Domain/ 
+        
         │   └── CardHolderStatus.cs                          # Enum: int ↔ status name
         │
         ├── Application/
