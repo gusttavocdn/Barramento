@@ -23,7 +23,8 @@ public sealed class CardsIngestionKafkaConsumer : IKafkaMessageHandler
     {
         using var scope = _scopeFactory.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IProcessCardEventUseCase>();
-        var @event = JsonSerializer.Deserialize<PortfolioDataUpdatedEvent>(payload, JsonOptions)!;
+        var @event = JsonSerializer.Deserialize<PortfolioDataUpdatedEvent>(payload, JsonOptions)
+            ?? throw new JsonException("Deserialized event was null.");
         await useCase.ExecuteAsync(@event, cancellationToken);
     }
 }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Creditbus.Facade.Features.CardsIngestion.Application.Contracts;
 using Creditbus.Facade.Features.CardsIngestion.Application.ProcessCardEvent;
 using Creditbus.Facade.Features.CardsIngestion.Infrastructure;
@@ -56,8 +57,9 @@ public class CardsIngestionKafkaConsumerTests
         useCase.ExecuteAsync(Arg.Any<PortfolioDataUpdatedEvent>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var serviceProvider = Substitute.For<IServiceProvider>();
-        serviceProvider.GetService(typeof(IProcessCardEventUseCase)).Returns(useCase);
+        var services = new ServiceCollection();
+        services.AddSingleton(useCase);
+        var serviceProvider = services.BuildServiceProvider();
 
         var scope = Substitute.For<IServiceScope>();
         scope.ServiceProvider.Returns(serviceProvider);
@@ -90,7 +92,7 @@ public class CardsIngestionKafkaConsumerTests
 
         var act = async () => await sut.HandleAsync("not valid json", CancellationToken.None);
 
-        await act.Should().ThrowAsync<Exception>();
+        await act.Should().ThrowAsync<JsonException>();
     }
 
     [Fact]
