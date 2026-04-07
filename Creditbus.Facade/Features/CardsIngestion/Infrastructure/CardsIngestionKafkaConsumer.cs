@@ -1,22 +1,29 @@
+using System.Text.Json;
+using Creditbus.Facade.Features.CardsIngestion.Application.Contracts;
+using Creditbus.Facade.Features.CardsIngestion.Application.ProcessCardEvent;
 using Creditbus.Facade.Shared.Infrastructure.Kafka;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Creditbus.Facade.Features.CardsIngestion.Infrastructure;
 
 public sealed class CardsIngestionKafkaConsumer : IKafkaMessageHandler
 {
-    private readonly ILogger<CardsIngestionKafkaConsumer> _logger;
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    public CardsIngestionKafkaConsumer(ILogger<CardsIngestionKafkaConsumer> logger)
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public CardsIngestionKafkaConsumer(IServiceScopeFactory scopeFactory)
     {
-        _logger = logger;
+        _scopeFactory = scopeFactory;
     }
 
     public string MessageType => "CardsIngestionEvent";
 
-    public Task HandleAsync(string payload, CancellationToken cancellationToken)
+    public async Task HandleAsync(string payload, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Received CardsIngestionEvent: {Payload}", payload);
-        return Task.CompletedTask;
+        using var scope = _scopeFactory.CreateScope();
+        var useCase = scope.ServiceProvider.GetRequiredService<IProcessCardEventUseCase>();
+        var @event = JsonSerializer.Deserialize<PortfolioDataUpdatedEvent>(payload, JsonOptions)!;
+        await useCase.ExecuteAsync(@event, cancellationToken);
     }
 }

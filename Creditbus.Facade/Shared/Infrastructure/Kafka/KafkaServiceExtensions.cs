@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Creditbus.Facade.Features.CardsIngestion.Application.ProcessCardEvent;
 using Creditbus.Facade.Features.CardsIngestion.Infrastructure;
 using Microsoft.Extensions.Options;
 
@@ -32,6 +33,7 @@ public static class KafkaServiceExtensions
             return new ConsumerBuilder<string, string>(config).Build();
         });
 
+        services.AddScoped<IProcessCardEventUseCase, ProcessCardEventUseCase>();
         services.AddSingleton<IKafkaMessageHandler, CardsIngestionKafkaConsumer>();
         services.AddSingleton<KafkaHandlerRegistry>();
         services.AddSingleton<KafkaDlqPublisher>();
