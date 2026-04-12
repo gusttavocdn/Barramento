@@ -1,0 +1,79 @@
+{
+  "correlationId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "createdAt": "2026-04-12T22:00:00Z",
+  "eventOrigin": "CoreBanking",
+  "portfolioDataUpdated": {
+    "cardHolderId": {
+      "tradingAccount": 1000001,
+      "brand": 1
+    },
+    "operationId": 987654321,
+    "productId": 10,
+    "productDescription": "Cartão Crédito Padrão",
+    "referenceDate": "2026-04-01T00:00:00Z",
+    "status": "Active",
+    "paymentStatus": "Regular",
+    "usedLimit": 1500.00,
+    "globalLimit": 5000.00,
+    "lastGlobalLimit": 4500.00,
+    "maximumCustomerLimit": 7000.00,
+    "limitExpected": 5500.00,
+    "limitExpectedUpdateDate": "2026-05-01T00:00:00Z",
+    "collateralLock": false,
+    "overdueDays": 0,
+    "overdueInvoiceBalance": 0.00,
+    "dueDate": 10,
+    "overLimitGroupId": 0,
+    "invoiceInstallmentPlanRequested": false,
+    "invoicePaymentPercentage": 100.00,
+    "lastPaymentAmount": 850.00,
+    "lastInvoiceClosedValue": 850.00,
+    "lastInvoicePaidDate": "2026-03-10T00:00:00Z",
+    "lastInvoiceClosedDate": "2026-03-05T00:00:00Z",
+    "lastCollectionCanceledDate": "2025-01-01T00:00:00Z",
+    "dateOfLastGlobalLimitIncrease": "2025-10-01T00:00:00Z",
+    "customerAcquisitionDate": "2022-06-15T00:00:00Z",
+    "monthlyUsedLimit": {
+      "lastOneMonthsUsedLimit": 1500.00,
+      "lastTwoMonthsUsedLimit": 1200.00,
+      "lastThreeMonthsUsedLimit": 980.00,
+      "lastFourMonthsUsedLimit": 1100.00,
+      "lastFiveMonthsUsedLimit": 750.00,
+      "lastSixMonthUsedLimit": 600.00
+    },
+    "lastInvoicesReceived": [
+      {
+        "index": 1,
+        "actualDueDate": "2026-04-10T00:00:00Z",
+        "dateFormatted": "10/04/2026",
+        "value": 850.00
+      },
+      {
+        "index": 2,
+        "actualDueDate": "2026-03-10T00:00:00Z",
+        "dateFormatted": "10/03/2026",
+        "value": 730.00
+      }
+    ],
+    "lastPaymentsReceived": [
+      {
+        "index": 1,
+        "date": "2026-03-10T00:00:00Z",
+        "dateFormatted": "10/03/2026",
+        "value": 850.00
+      },
+      {
+        "index": 2,
+        "date": "2026-02-10T00:00:00Z",
+        "dateFormatted": "10/02/2026",
+        "value": 730.00
+      }
+    ],
+    "installmentsInformation": {
+      "installmentsQuantity": 0,
+      "currentInstallment": 0,
+      "installmentValue": 0.00,
+      "type": "None"
+    }
+  }
+}

@@ -1,66 +1,70 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Este arquivo fornece orientações ao Claude Code (claude.ai/code) ao trabalhar com o código neste repositório.
 
-## Commands
+## Idioma
+
+- Toda documentação, comentários de código, mensagens de commit e arquivos Markdown devem ser escritos em **Português do Brasil**.
+
+## Comandos
 
 ```bash
 # Build
 dotnet build Creditbus.Facade.sln
 
-# Run
+# Executar
 dotnet run --project Creditbus.Facade/Creditbus.Facade.csproj
 
-# Run tests (once test projects are added)
+# Executar testes (quando projetos de teste forem adicionados)
 dotnet test Creditbus.Facade.sln
 
-# Publish
+# Publicar
 dotnet publish Creditbus.Facade/Creditbus.Facade.csproj -c Release
 
-# Build Docker image (from repo root)
+# Construir imagem Docker (a partir da raiz do repositório)
 docker build -f Creditbus.Facade/Dockerfile -t creditbus-facade .
 ```
 
-## Architecture
+## Arquitetura
 
-Single-project .NET 10 Web API targeting Linux containers. Entry point is `Creditbus.Facade/Program.cs` using top-level statements and Minimal API.
+Web API .NET 10 de projeto único com alvo em containers Linux. O ponto de entrada é `Creditbus.Facade/Program.cs`, utilizando top-level statements e Minimal API.
 
-The Dockerfile uses a multi-stage build: `sdk:10.0` for build/publish, `aspnet:10.0` as the final base image (no SDK in production). Ports `8080` (HTTP) and `8081` (HTTPS) are exposed. The `.dockerignore` is linked into the project via `Creditbus.Facade.csproj` so Docker picks it up from the solution root.
+O Dockerfile utiliza um build multi-estágio: `sdk:10.0` para build/publicação, `aspnet:10.0` como imagem final (sem SDK em produção). As portas `8080` (HTTP) e `8081` (HTTPS) são expostas. O `.dockerignore` é vinculado ao projeto via `Creditbus.Facade.csproj` para que o Docker o localize a partir da raiz da solução.
 
-### Folder Structure — Vertical Slices + DDD
+### Estrutura de Pastas — Vertical Slices + DDD
 
-The project follows Vertical Slice Architecture with DDD building blocks, organized by feature (bounded context). All separation is by namespace/folder within the single `Creditbus.Facade` project.
+O projeto segue a Arquitetura de Fatias Verticais com blocos de construção DDD, organizado por funcionalidade (bounded context). Toda a separação é feita por namespace/pasta dentro do único projeto `Creditbus.Facade`.
 
 ```
 Creditbus.Facade/
 ├── Shared/
-│   ├── Domain/          # Base classes: Entity<T>, AggregateRoot<T>, ValueObject, IDomainEvent
-│   ├── Infrastructure/  # Shared DI extensions, logging, HTTP client factory setup
-│   └── Api/             # Global middlewares, exception handlers, common filters
+│   ├── Domain/          # Classes base: Entity<T>, AggregateRoot<T>, ValueObject, IDomainEvent
+│   ├── Infrastructure/  # Extensões de DI compartilhadas, logging, configuração do HTTP client factory
+│   └── Api/             # Middlewares globais, tratadores de exceção, filtros comuns
 │
 ├── Features/
-│   └── <FeatureName>/   # One folder per bounded context / feature
-│       ├── Domain/      # Aggregates, Entities, Value Objects, Domain Events, IRepository interfaces
-│       ├── Application/ # Use cases: Commands, Queries, Handlers, Validators, Response DTOs
-│       ├── Infrastructure/ # Repository implementations, external HTTP clients, messaging adapters
-│       └── Api/         # Minimal API endpoints or Controllers for this feature
+│   └── <NomeDaFeature>/ # Uma pasta por bounded context / funcionalidade
+│       ├── Domain/      # Agregados, Entidades, Value Objects, Eventos de Domínio, interfaces IRepository
+│       ├── Application/ # Casos de uso: Commands, Queries, Handlers, Validators, DTOs de resposta
+│       ├── Infrastructure/ # Implementações de repositório, clientes HTTP externos, adaptadores de mensageria
+│       └── Api/         # Endpoints Minimal API ou Controllers desta funcionalidade
 │
-└── Program.cs           # Composition root: registers all DI, maps all endpoints
+└── Program.cs           # Raiz de composição: registra todo DI, mapeia todos os endpoints
 ```
 
-#### Rules
+#### Regras
 
-- **Dependency direction:** `Api → Application → Domain`. `Infrastructure` implements interfaces defined in `Domain`/`Application` and is wired in `Program.cs` — it never leaks into other layers.
-- **Cross-feature communication:** features must not reference each other directly. Use domain events or shared DTOs placed in `Shared/` when coordination is needed.
-- **Shared/ must stay thin:** only truly cross-cutting abstractions belong there. If something is only used by one feature, it stays inside that feature.
-- **New features:** add a new folder under `Features/` following the same four-subfolder layout (`Domain`, `Application`, `Infrastructure`, `Api`).
+- **Direção de dependência:** `Api → Application → Domain`. `Infrastructure` implementa interfaces definidas em `Domain`/`Application` e é configurado em `Program.cs` — nunca vaza para outras camadas.
+- **Comunicação entre features:** as features não devem referenciar umas às outras diretamente. Utilize eventos de domínio ou DTOs compartilhados em `Shared/` quando for necessária coordenação.
+- **Shared/ deve ser enxuto:** apenas abstrações verdadeiramente transversais pertencem a esse local. Se algo é utilizado por apenas uma feature, deve permanecer dentro dela.
+- **Novas features:** adicionar uma nova pasta em `Features/` seguindo o mesmo layout de quatro subpastas (`Domain`, `Application`, `Infrastructure`, `Api`).
 
-#### Naming conventions
+#### Convenções de nomenclatura
 
-- **Kafka consumers:** classes that implement `IKafkaMessageHandler` must be named `<FeatureName>KafkaConsumer` and live in `Features/<FeatureName>/Infrastructure/`. Example: `CardsIngestionKafkaConsumer`.
+- **Consumers Kafka:** classes que implementam `IKafkaMessageHandler` devem ser nomeadas `<NomeDaFeature>KafkaConsumer` e residir em `Features/<NomeDaFeature>/Infrastructure/`. Exemplo: `CardsIngestionKafkaConsumer`.
 
-#### Current features
+#### Features atuais
 
-| Feature | Description |
+| Feature | Descrição |
 |---|---|
-| `CardsIngestion` | Ingestion pipeline for card data |
+| `CardsIngestion` | Pipeline de ingestão de dados de cartões |
