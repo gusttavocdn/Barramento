@@ -36,9 +36,9 @@ public class PartitionWorkerTests
         };
     }
 
-    private PartitionWorker BuildSut(params IKafkaMessageHandler[] handlers)
+    private PartitionWorker BuildSut(params IKafkaMessageConsumer[] handlers)
     {
-        var handlerRegistry = new KafkaHandlerRegistry(handlers);
+        var handlerRegistry = new KafkaConsumerRegistry(handlers);
         var dlqPublisher = new KafkaDlqPublisher(_producer, Options.Create(_options));
         var pipeline = KafkaConsumerBackgroundService.BuildPipeline(_options.Retry);
         return new PartitionWorker(
@@ -72,7 +72,7 @@ public class PartitionWorkerTests
     [Fact]
     public async Task ProcessMessage_StoresOffset_WhenHandlerSucceeds()
     {
-        var handler = Substitute.For<IKafkaMessageHandler>();
+        var handler = Substitute.For<IKafkaMessageConsumer>();
         handler.MessageType.Returns("CardsIngestionEvent");
         handler.HandleAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
@@ -91,7 +91,7 @@ public class PartitionWorkerTests
     [Fact]
     public async Task ProcessMessage_SendsToDlqAndStoresOffset_WhenHandlerFailsAllRetries()
     {
-        var handler = Substitute.For<IKafkaMessageHandler>();
+        var handler = Substitute.For<IKafkaMessageConsumer>();
         handler.MessageType.Returns("CardsIngestionEvent");
         handler.HandleAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException(new Exception("handler failed")));
@@ -155,14 +155,14 @@ public class PartitionWorkerTests
             ChannelCapacity = 100,
             Retry = new RetryOptions { MaxAttempts = 2, InitialDelayMs = 0, MaxDelayMs = 0, JitterFactor = 0 }
         };
-        var handler = Substitute.For<IKafkaMessageHandler>();
+        var handler = Substitute.For<IKafkaMessageConsumer>();
         handler.MessageType.Returns("CardsIngestionEvent");
         handler.HandleAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(
                 _ => Task.FromException(new Exception("first attempt fails")),
                 _ => Task.CompletedTask);
 
-        var handlerRegistry = new KafkaHandlerRegistry([handler]);
+        var handlerRegistry = new KafkaConsumerRegistry([handler]);
         var dlqPublisher = new KafkaDlqPublisher(_producer, Options.Create(options));
         var pipeline = KafkaConsumerBackgroundService.BuildPipeline(options.Retry);
         var sut = new PartitionWorker(
@@ -185,7 +185,7 @@ public class PartitionWorkerTests
     public async Task StopAsync_DrainsChannelBeforeReturning()
     {
         var processedCount = 0;
-        var handler = Substitute.For<IKafkaMessageHandler>();
+        var handler = Substitute.For<IKafkaMessageConsumer>();
         handler.MessageType.Returns("CardsIngestionEvent");
         handler.HandleAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(async _ =>

@@ -11,7 +11,7 @@ public sealed class PartitionWorker : IPartitionWorker
     private readonly TopicPartition _partition;
     private readonly IConsumer<string, string> _consumer;
     private readonly Channel<ConsumeResult<string, string>> _channel;
-    private readonly KafkaHandlerRegistry _handlerRegistry;
+    private readonly KafkaConsumerRegistry _consumerRegistry;
     private readonly KafkaDlqPublisher _dlqPublisher;
     private readonly ResiliencePipeline _pipeline;
     private readonly ILogger<PartitionWorker> _logger;
@@ -21,14 +21,14 @@ public sealed class PartitionWorker : IPartitionWorker
         TopicPartition partition,
         IConsumer<string, string> consumer,
         int channelCapacity,
-        KafkaHandlerRegistry handlerRegistry,
+        KafkaConsumerRegistry consumerRegistry,
         KafkaDlqPublisher dlqPublisher,
         ResiliencePipeline pipeline,
         ILogger<PartitionWorker> logger)
     {
         _partition = partition;
         _consumer = consumer;
-        _handlerRegistry = handlerRegistry;
+        _consumerRegistry = consumerRegistry;
         _dlqPublisher = dlqPublisher;
         _pipeline = pipeline;
         _logger = logger;
@@ -95,10 +95,10 @@ public sealed class PartitionWorker : IPartitionWorker
 
         var messageType = Encoding.UTF8.GetString(messageTypeBytes);
 
-        IKafkaMessageHandler handler;
+        IKafkaMessageConsumer consumer;
         try
         {
-            handler = _handlerRegistry.Resolve(messageType);
+            consumer = _consumerRegistry.Resolve(messageType);
         }
         catch (InvalidOperationException ex)
         {
@@ -115,7 +115,7 @@ public sealed class PartitionWorker : IPartitionWorker
         try
         {
             await _pipeline.ExecuteAsync(
-                async ct => await handler.HandleAsync(result.Message.Value, ct),
+                async ct => await consumer.HandleAsync(result.Message.Value, ct),
                 cancellationToken);
         }
         catch (Exception ex)

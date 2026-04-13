@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Creditbus.Facade.Shared.Infrastructure.Kafka;
 
-public abstract class KafkaMessageHandler<T> : IKafkaMessageHandler
+public abstract class KafkaMessageConsumer<T> : IKafkaMessageConsumer
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 

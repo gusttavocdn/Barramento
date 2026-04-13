@@ -1,12 +1,12 @@
 namespace Creditbus.Facade.Shared.Infrastructure.Kafka;
 
-public sealed class KafkaHandlerRegistry
+public sealed class KafkaConsumerRegistry
 {
-    private readonly Dictionary<string, IKafkaMessageHandler> _handlers;
+    private readonly Dictionary<string, IKafkaMessageConsumer> _handlers;
 
-    public KafkaHandlerRegistry(IEnumerable<IKafkaMessageHandler> handlers)
+    public KafkaConsumerRegistry(IEnumerable<IKafkaMessageConsumer> handlers)
     {
-        _handlers = new Dictionary<string, IKafkaMessageHandler>(StringComparer.OrdinalIgnoreCase);
+        _handlers = new Dictionary<string, IKafkaMessageConsumer>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var handler in handlers)
         {
@@ -16,7 +16,7 @@ public sealed class KafkaHandlerRegistry
         }
     }
 
-    public IKafkaMessageHandler Resolve(string messageType)
+    public IKafkaMessageConsumer Resolve(string messageType)
     {
         if (_handlers.TryGetValue(messageType, out var handler))
             return handler;

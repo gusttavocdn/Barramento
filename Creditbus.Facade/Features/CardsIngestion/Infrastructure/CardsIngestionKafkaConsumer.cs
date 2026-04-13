@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Creditbus.Facade.Features.CardsIngestion.Infrastructure;
 
-public sealed class CardsIngestionKafkaConsumer : KafkaMessageHandler<PortfolioDataUpdatedEvent>
+public sealed class CardsIngestionKafkaConsumer : KafkaMessageConsumer<PortfolioDataUpdatedEvent>
 {
 	private readonly IServiceScopeFactory _scopeFactory;
 
