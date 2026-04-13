@@ -8,6 +8,7 @@ public sealed class KafkaOptions
     public string GroupId { get; init; } = string.Empty;
     public string Topic { get; init; } = string.Empty;
     public string DlqTopic { get; init; } = string.Empty;
+    public int ChannelCapacity { get; init; } = 1000;
     public RetryOptions Retry { get; init; } = new();
 }
 
