@@ -21,31 +21,51 @@ public record LoadTestOptions(
         var broker = DefaultBroker;
         var topic = DefaultTopic;
 
-        for (var i = 0; i < args.Length - 1; i++)
+        for (var i = 0; i < args.Length; i++)
         {
             switch (args[i])
             {
                 case "--rate":
+                    RequireValue(args, i);
                     if (!int.TryParse(args[i + 1], out rate) || rate <= 0)
                         throw new ArgumentException($"--rate deve ser um inteiro positivo. Recebido: '{args[i + 1]}'");
+                    i++;
                     break;
                 case "--workers":
+                    RequireValue(args, i);
                     if (!int.TryParse(args[i + 1], out workers) || workers <= 0)
                         throw new ArgumentException($"--workers deve ser um inteiro positivo. Recebido: '{args[i + 1]}'");
+                    i++;
                     break;
                 case "--duration":
+                    RequireValue(args, i);
                     duration = ParseDuration(args[i + 1]);
+                    i++;
                     break;
                 case "--broker":
+                    RequireValue(args, i);
                     broker = args[i + 1];
+                    i++;
                     break;
                 case "--topic":
+                    RequireValue(args, i);
                     topic = args[i + 1];
+                    i++;
+                    break;
+                default:
+                    if (args[i].StartsWith("--"))
+                        throw new ArgumentException($"Argumento desconhecido: '{args[i]}'");
                     break;
             }
         }
 
         return new LoadTestOptions(rate, workers, duration, broker, topic);
+    }
+
+    private static void RequireValue(string[] args, int flagIndex)
+    {
+        if (flagIndex + 1 >= args.Length || args[flagIndex + 1].StartsWith("--"))
+            throw new ArgumentException($"O argumento '{args[flagIndex]}' requer um valor.");
     }
 
     private static TimeSpan ParseDuration(string value)
