@@ -61,9 +61,9 @@ public static class KafkaServiceExtensions
                 })
                 .SetPartitionsRevokedHandler((_, partitions) =>
                 {
-                    foreach (var tp in partitions)
+                    foreach (var tpo in partitions)
                     {
-                        var worker = workerRegistry.Remove(tp);
+                        var worker = workerRegistry.Remove(tpo.TopicPartition);
                         worker?.StopAsync().GetAwaiter().GetResult();
                     }
                 })
