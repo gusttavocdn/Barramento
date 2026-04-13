@@ -32,7 +32,7 @@ services:
         condition: service_healthy
     entrypoint: ["/bin/sh", "-c"]
     command: |
-      "kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic creditbus.ingestion --partitions 1 --replication-factor 1 &&
+      "kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic creditbus.ingestion --partitions 4 --replication-factor 1 &&
        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic creditbus.ingestion.dlq --partitions 1 --replication-factor 1"
     restart: "no"
 
