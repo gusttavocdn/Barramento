@@ -25,6 +25,45 @@ dotnet publish Creditbus.Facade/Creditbus.Facade.csproj -c Release
 docker build -f Creditbus.Facade/Dockerfile -t creditbus-facade .
 ```
 
+## Teste de Carga (Load Test)
+
+O projeto `Creditbus.Facade.LoadTests` publica mensagens `PortfolioDataUpdatedEvent` aleatórias e realistas no Kafka para teste de carga do `CardsIngestionKafkaConsumer`.
+
+### Pré-requisito
+
+O Kafka precisa estar rodando. Use o Docker Compose incluído na solution:
+
+```bash
+docker compose up -d
+```
+
+A Kafka UI fica disponível em `http://localhost:8090`.
+
+### Executar o teste
+
+```bash
+# Configuração padrão: 100 msg/s, 4 workers, roda até Ctrl+C
+dotnet run --project Creditbus.Facade.LoadTests
+
+# Com duração definida
+dotnet run --project Creditbus.Facade.LoadTests -- --rate 500 --workers 8 --duration 2m
+
+# Parâmetros disponíveis
+dotnet run --project Creditbus.Facade.LoadTests -- --help
+```
+
+### Parâmetros
+
+| Parâmetro | Descrição | Padrão |
+|---|---|---|
+| `--rate` | Mensagens por segundo | `100` |
+| `--workers` | Workers paralelos de publicação | `4` |
+| `--duration` | Duração total (ex: `30s`, `2m`, `1h`) | roda até Ctrl+C |
+| `--broker` | Bootstrap server Kafka | `localhost:9092` |
+| `--topic` | Tópico Kafka de destino | `creditbus.ingestion` |
+
+---
+
 ## Arquitetura
 
 Web API .NET 10 de projeto único com alvo em containers Linux. O ponto de entrada é `Creditbus.Facade/Program.cs`, utilizando top-level statements e Minimal API.
