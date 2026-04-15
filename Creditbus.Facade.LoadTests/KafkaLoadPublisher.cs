@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Confluent.Kafka;
@@ -79,7 +80,11 @@ public sealed class KafkaLoadPublisher
                     new Message<string, string>
                     {
                         Key = @event.CorrelationId.ToString(),
-                        Value = json
+                        Value = json,
+                        Headers = new Headers
+                        {
+                            { "message-type", Encoding.UTF8.GetBytes("CardsIngestionEvent") }
+                        }
                     },
                     cancellationToken);
 
