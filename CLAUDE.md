@@ -52,15 +52,6 @@ dotnet run --project Creditbus.Facade/Creditbus.Facade.csproj > facade.log 2>&1 
 dotnet run --project Creditbus.Facade.LoadTests -- --rate 1000 --workers 8 --duration 5m
 ```
 
-### Encerrar a aplicação após o teste
-
-```powershell
-# Windows — encerrar todos os processos dotnet da aplicação
-Get-Process dotnet | Stop-Process -Force
-```
-
-> **Atenção:** o processo MSBuild do próprio ambiente de desenvolvimento também aparece como `dotnet.exe`. Verifique com `Get-CimInstance Win32_Process -Filter "Name='dotnet.exe'"` se precisar encerrar seletivamente.
-
 ### Parâmetros do publisher
 
 | Parâmetro | Descrição | Padrão |
@@ -71,20 +62,6 @@ Get-Process dotnet | Stop-Process -Force
 | `--broker` | Bootstrap server Kafka | `localhost:9092` |
 | `--topic` | Tópico Kafka de destino | `creditbus.ingestion` |
 
-### Resultados de referência (baseline — 2026-04-14)
-
-Teste com `--rate 1000 --workers 8 --duration 5m` em ambiente local (UseCase sem lógica aplicada):
-
-| Métrica | Valor |
-|---|---|
-| Total publicado | 87.121 mensagens |
-| Taxa efetiva de publicação | ~290 msg/s |
-| Latência de publicação (broker local) | ~26–27ms |
-| Erros de publicação | 0 |
-| Latência de processamento da UseCase | < 1ms |
-| Consumer lag | 0 (consumo em tempo real) |
-
-> **Gargalo observado:** o throughput de ~290 msg/s é limitado pelo broker Kafka local sem tuning (`linger.ms`, `batch.size`), não pelo consumer. Em produção com broker otimizado, o throughput será significativamente maior.
 
 > **Header obrigatório:** as mensagens devem conter o header `message-type: CardsIngestionEvent` para que o `PartitionWorker` roteie corretamente ao consumer. Sem esse header, as mensagens vão para o DLQ.
 
