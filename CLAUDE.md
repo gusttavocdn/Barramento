@@ -39,20 +39,29 @@ docker compose up -d
 
 A Kafka UI fica disponível em `http://localhost:8090`.
 
-### Executar o teste
+### Executar o teste completo (aplicação + publisher)
 
 ```bash
-# Configuração padrão: 100 msg/s, 4 workers, roda até Ctrl+C
-dotnet run --project Creditbus.Facade.LoadTests
+# 1. Subir o Kafka
+docker compose up -d
 
-# Com duração definida
-dotnet run --project Creditbus.Facade.LoadTests -- --rate 500 --workers 8 --duration 2m
+# 2. Subir a aplicação em background
+dotnet run --project Creditbus.Facade/Creditbus.Facade.csproj > facade.log 2>&1 &
 
-# Parâmetros disponíveis
-dotnet run --project Creditbus.Facade.LoadTests -- --help
+# 3. Rodar o publisher
+dotnet run --project Creditbus.Facade.LoadTests -- --rate 1000 --workers 8 --duration 5m
 ```
 
-### Parâmetros
+### Encerrar a aplicação após o teste
+
+```powershell
+# Windows — encerrar todos os processos dotnet da aplicação
+Get-Process dotnet | Stop-Process -Force
+```
+
+> **Atenção:** o processo MSBuild do próprio ambiente de desenvolvimento também aparece como `dotnet.exe`. Verifique com `Get-CimInstance Win32_Process -Filter "Name='dotnet.exe'"` se precisar encerrar seletivamente.
+
+### Parâmetros do publisher
 
 | Parâmetro | Descrição | Padrão |
 |---|---|---|
@@ -61,6 +70,23 @@ dotnet run --project Creditbus.Facade.LoadTests -- --help
 | `--duration` | Duração total (ex: `30s`, `2m`, `1h`) | roda até Ctrl+C |
 | `--broker` | Bootstrap server Kafka | `localhost:9092` |
 | `--topic` | Tópico Kafka de destino | `creditbus.ingestion` |
+
+### Resultados de referência (baseline — 2026-04-14)
+
+Teste com `--rate 1000 --workers 8 --duration 5m` em ambiente local (UseCase sem lógica aplicada):
+
+| Métrica | Valor |
+|---|---|
+| Total publicado | 87.121 mensagens |
+| Taxa efetiva de publicação | ~290 msg/s |
+| Latência de publicação (broker local) | ~26–27ms |
+| Erros de publicação | 0 |
+| Latência de processamento da UseCase | < 1ms |
+| Consumer lag | 0 (consumo em tempo real) |
+
+> **Gargalo observado:** o throughput de ~290 msg/s é limitado pelo broker Kafka local sem tuning (`linger.ms`, `batch.size`), não pelo consumer. Em produção com broker otimizado, o throughput será significativamente maior.
+
+> **Header obrigatório:** as mensagens devem conter o header `message-type: CardsIngestionEvent` para que o `PartitionWorker` roteie corretamente ao consumer. Sem esse header, as mensagens vão para o DLQ.
 
 ---
 
